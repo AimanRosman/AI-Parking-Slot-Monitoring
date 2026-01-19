@@ -4,7 +4,11 @@
 ![YOLO](https://img.shields.io/badge/YOLO-11-green.svg)
 ![Intel](https://img.shields.io/badge/Performance-OpenVINO-blueviolet.svg)
 
-An end-to-end Computer Vision system designed to automate parking lot occupancy tracking, enforcement, and business intelligence. This project leverages the state-of-the-art **YOLO11** object detection model, optimized for real-time edge performance on standard CPUs.
+## 📖 Project Bio
+
+**AI Smart Parking Management System** is a cutting-edge computer vision solution designed to transform urban infrastructure. By leveraging the high-speed **YOLO26n** architecture and **Intel OpenVINO** optimization, the system provides high-performance, real-time occupancy tracking, automated enforcement via spot-duration timers, and granular business intelligence. Developed for the next generation of Smart Cities, this project enables facility managers to reduce traffic congestion, automate manual patrols, and make data-driven decisions through high-resolution historical analytics.
+
+---
 
 ## 🌟 Key Features
 
@@ -47,11 +51,32 @@ Edit `config.json` to customize video source, model paths, and UI settings:
 }
 ```
 
-### 3. Run the System
-Run the main monitor:
+## 🎮 How to Use (Step-by-Step)
+
+### 1. Calibration (Define your Spots)
+Before running the AI, you need to tell it where the parking spots are:
+*   Run `python img.py` to get a snapshot of your empty parking lot.
+*   Run `python se.py` to open the selection tool.
+*   **Left-Click** 4 corners of each parking spot. Once done, click **Save**. This creates `bounding_boxes.json`.
+
+### 2. Speed Optimization (Optional)
+To get the smoothest playback on a standard PC:
+*   Run `python optimize_model.py`. This converts the YOLO model into the **OpenVINO** format for a 3-5x speed boost.
+*   Update `config.json` setting `"model_path"` to `"yolo11n_openvino_model"`.
+
+### 3. Live Monitoring
+Start the main application:
 ```bash
 python main.py
 ```
+*   **Spacebar**: Pause/Resume the video.
+*   **Slider**: Drag the progress bar at the top to seek to any time.
+*   **'S' Key**: Save a snapshot of the current detections.
+*   **'N' Key**: Toggle **Night Mode** to brighten dark footage.
+
+### 4. Analysis
+After running the monitor, your data is saved in `parking_log.csv`. 
+*   Run `python analyze_logs.py` to generate a professional trend report (`parking_trends.png`).
 
 ## 🛠 Tech Stack
 
