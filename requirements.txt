@@ -1,0 +1,6 @@
+ultralytics
+opencv-python
+pillow
+numpy
+shapely>=2.0.0
+lap>=0.5.12

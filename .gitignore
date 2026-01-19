@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Project specific
+parking_log.csv
+parking_trends.png
+snapshot_*.jpg
+img_0.jpg
+yolo11n.pt
+yolo26n.pt
+yolo11s.pt
+yolo11n_openvino_model/
+bounding_boxes.json
+*mp4
+!parking1.mp4

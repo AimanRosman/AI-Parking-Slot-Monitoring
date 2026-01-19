@@ -1,0 +1,21 @@
+{
+    "video_source": "parking1.mp4",
+    "model_path": "yolo11n.pt",
+    "json_file": "bounding_boxes.json",
+    "display": {
+        "width": 1080,
+        "height": 600,
+        "slow_motion_delay": 80,
+        "show_fps": true,
+        "show_status": true
+    },
+    "logging": {
+        "enabled": true,
+        "interval_seconds": 5,
+        "csv_file": "parking_log.csv"
+    },
+    "alerts": {
+        "nearly_full_threshold": 2,
+        "overstay_seconds": 3600
+    }
+}
