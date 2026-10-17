@@ -1,87 +1,113 @@
-# 🚗 AI Smart Parking Management System (YOLO26n + OpenVINO)
+# AI Parking Slot Monitoring
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![YOLO](https://img.shields.io/badge/YOLO-11-green.svg)
-![Intel](https://img.shields.io/badge/Performance-OpenVINO-blueviolet.svg)
+A desktop computer vision prototype for monitoring parking occupancy in recorded video. It combines YOLO car detection with manually defined parking polygons, displays occupancy and elapsed spot timers, and writes CSV logs for later analysis.
 
-## 📖 Project Bio
+The current configuration and export script use `yolo11n.pt`. Performance and detection accuracy depend on the footage, model, hardware, and calibration; this repository does not include measured accuracy or speedup results.
 
-**AI Smart Parking Management System** is a cutting-edge computer vision solution designed to transform urban infrastructure. By leveraging the high-speed **YOLO26n** architecture and **Intel OpenVINO** optimization, the system provides high-performance, real-time occupancy tracking, automated enforcement via spot-duration timers, and granular business intelligence. Developed for the next generation of Smart Cities, this project enables facility managers to reduce traffic congestion, automate manual patrols, and make data-driven decisions through high-resolution historical analytics.
+## What the project demonstrates
 
----
+- An OpenCV video interface with pause, seek, snapshots, and a brightness enhancement toggle.
+- A Tkinter tool for drawing four-corner parking regions.
+- Car detection through Ultralytics and occupancy determined by each bounding box's center point falling inside a region.
+- Per-region elapsed occupancy timers and a nearly-full overlay.
+- Periodic timestamped CSV occupancy records and a Matplotlib trend chart.
+- An optional model export path for OpenVINO.
 
-## 🌟 Key Features
+```text
+Video -> resized frames -> YOLO detections -> polygon occupancy -> annotated display
+                                             |                    `-> snapshots
+                                             `-> CSV -> trend chart
+```
 
-*   **Real-Time Occupancy Tracking**: High-precision detection of available and occupied spots.
-*   **Spot Duration Timers**: Tracks exactly how long each car has been parked for enforcement.
-*   **Edge Optimization**: Built-in tools to convert models to **OpenVINO** for up to 5x speedup on Windows CPUs.
-*   **Interactive Controls**: Seek through video footage, pause/play, and toggle night-mode enhancement.
-*   **Business Intelligence**: Automated CSV logging capturing **17,280 data points per day** for peak-hour analysis.
-*   **Snapshot System**: On-demand image capture for evidence and violations.
+## Files
 
-## 🌍 Real-World Functionality & Impact
+| File | Role |
+| --- | --- |
+| [`main.py`](main.py) | Video interface, configuration, logging, and snapshots |
+| [`parking.py`](parking.py) | Region selector and occupancy/timer processing |
+| [`config.json`](config.json) | Video/model paths, display, log, and alert settings |
+| [`img.py`](img.py) | Extracts a 1080 × 600 calibration frame from `parking1.mp4` |
+| [`se.py`](se.py) | Opens the region selector |
+| [`optimize_model.py`](optimize_model.py) | Exports `yolo11n.pt` to OpenVINO |
+| [`analyze_logs.py`](analyze_logs.py) | Plots occupancy history |
+| [`parking1.mp4`](parking1.mp4) | Included demonstration footage |
 
-This system is not just a detection script; it's a tool with direct commercial and environmental applications:
+## Setup
 
-*   **Smart City Integration**: Reduces urban traffic congestion (up to 30% of which is caused by drivers searching for parking) by providing live occupancy data.
-*   **Enforcement Automation**: The **Spot-Duration Timers** allow facility managers to automatically identify vehicles exceeding stay limits without manual patrolling.
-*   **Business Intelligence**: Automated CSV logging provides high-granularity data to help businesses understand **Peak Demand**, allowing for optimized staffing and dynamic pricing.
-*   **Environmental Sustainability**: Reduces vehicle idling and CO2 emissions by directing drivers to empty spots faster.
-*   **Security Snapshots**: Provides a manual way to capture visual evidence of parking violations or security incidents.
+Use a Python environment with a graphical desktop and Tkinter support. Dependency versions are not locked, and `parking.py` imports Ultralytics internal solution APIs, so compatibility must be checked against the installed release.
 
-## 📊 Technical Metrics (Career Highlights)
-*   **Edge Optimized**: Real-time performance on standard CPUs via **OpenVINO**, achieving a **3x-5x latency reduction**.
-*   **Big Data Capability**: Captures **17,280 metrics per day**, providing high-resolution datasets for predictive analytics.
-*   **Ultra-Modern AI**: Implements **YOLO26n**, utilizing the latest experimental architectures for high-speed object detection.
-
-## 🚀 Quick Start
-
-### 1. Installation
 ```bash
-pip install -r requirements.txt
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux: source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-### 2. Configuration
-Edit `config.json` to customize video source, model paths, and UI settings:
-```json
-{
-    "video_source": "parking1.mp4",
-    "model_path": "yolo11n.pt",
-    "display": { "slow_motion_delay": 80 }
-}
+For trend charts, also install the optional analytics dependencies:
+
+```bash
+python -m pip install -r requirements-analytics.txt
 ```
 
-## 🎮 How to Use (Step-by-Step)
+Run all commands from the repository root; file paths are relative to the working directory.
 
-### 1. Calibration (Define your Spots)
-Before running the AI, you need to tell it where the parking spots are:
-*   Run `python img.py` to get a snapshot of your empty parking lot.
-*   Run `python se.py` to open the selection tool.
-*   **Left-Click** 4 corners of each parking spot. Once done, click **Save**. This creates `bounding_boxes.json`.
+## Calibrate and run
 
-### 2. Speed Optimization (Optional)
-To get the smoothest playback on a standard PC:
-*   Run `python optimize_model.py`. This converts the YOLO model into the **OpenVINO** format for a 3-5x speed boost.
-*   Update `config.json` setting `"model_path"` to `"yolo11n_openvino_model"`.
+1. Review `config.json`. The default input is `parking1.mp4`, model is `yolo11n.pt`, region file is `bounding_boxes.json`, and display size is 1080 × 600.
+2. Run `python img.py` to extract `img_0.jpg` from the bundled video. For another input, update the hard-coded video path in `img.py`; it does not read `config.json`.
+3. Run `python se.py`, choose **Upload Image**, and open `img_0.jpg`.
+4. Click the four corners of each parking space in perimeter order. Use **Remove Last BBox** to undo and **Save** to create `bounding_boxes.json`.
+5. Start the monitor:
 
-### 3. Live Monitoring
-Start the main application:
 ```bash
 python main.py
 ```
-*   **Spacebar**: Pause/Resume the video.
-*   **Slider**: Drag the progress bar at the top to seek to any time.
-*   **'S' Key**: Save a snapshot of the current detections.
-*   **'N' Key**: Toggle **Night Mode** to brighten dark footage.
 
-### 4. Analysis
-After running the monitor, your data is saved in `parking_log.csv`. 
-*   Run `python analyze_logs.py` to generate a professional trend report (`parking_trends.png`).
+Keep the calibration image dimensions equal to the processing dimensions in `config.json`. The selector saves coordinates in the uploaded image's original coordinate system, while the monitor resizes video frames before detection.
 
-## 🛠 Tech Stack
+Model weights are not committed; Ultralytics may download a recognized model on first use. Use weights from a trusted source.
 
-*   **Core**: Python, OpenCV, YOLO11
-*   **Optimization**: OpenVINO
-*   **Analytics**: Pandas, Matplotlib
-*   **Data**: CSV-based historical logging & trend analysis.
-Distributed under the MIT License. See `LICENSE` for more information.
+| Control | Action |
+| --- | --- |
+| Space | Pause or resume |
+| Progress slider | Seek within the video |
+| `s` | Save `snapshot_<timestamp>.jpg` |
+| `n` | Toggle brightness/contrast enhancement |
+| Escape or close window | Exit |
+
+The video loops automatically. A snapshot contains the annotated frame and may contain identifiable people or number plates.
+
+## Configuration and outputs
+
+| Setting | Purpose |
+| --- | --- |
+| `video_source`, `model_path`, `json_file` | Input video, detector, and calibration paths |
+| `display.width`, `display.height` | Processing image size; must match calibration |
+| `display.slow_motion_delay` | Milliseconds passed to OpenCV key polling, in addition to processing time |
+| `display.show_fps`, `display.show_status` | Display overlays |
+| `logging.enabled`, `interval_seconds`, `csv_file` | Wall-clock log interval and destination |
+| `alerts.nearly_full_threshold` | Available-space threshold for the overlay |
+| `alerts.overstay_seconds` | Present in configuration, but not used by the current code |
+
+When logging is enabled, `parking_log.csv` records `Timestamp`, `Occupied`, and `Available`. With data available, run:
+
+```bash
+python analyze_logs.py
+```
+
+This writes `parking_trends.png` and opens the chart window.
+
+For optional OpenVINO export, install `openvino`, run `python optimize_model.py`, and set `config.json`'s `model_path` to the returned export directory, typically `yolo11n_openvino_model`. Check the exported model against the same footage before relying on it; there is no benchmark proving a particular speed improvement.
+
+## Limitations and validation
+
+- Detection is restricted to class `2` (cars). Occlusion, camera movement, overlapping regions, and non-car vehicles can affect counts.
+- Timers measure elapsed wall-clock time while a region is occupied. They are not vehicle identities and do not reset when seeking or looping video; they should not be used as enforcement evidence.
+- CSV timestamps also use wall-clock time rather than video timestamps. Playback speed and pause behavior affect the resulting log.
+- The UI assumes a seekable input with a frame count; live streams are not validated.
+- There is no committed calibration file, automated test suite, pinned environment, or evaluation dataset. Confirm calibration, empty/occupied counts, pause/seek/loop behavior, and CSV/chart output on your own footage before a demonstration.
+- Keep private footage, generated snapshots, and site-specific logs out of public commits. `.gitignore` excludes generated outputs but cannot remove previously committed data.
+
+## License
+
+See the [MIT License](LICENSE). Review the separate terms for Ultralytics, model weights, and any footage you use.

@@ -1,45 +1,14 @@
-# Smart Parking Lot AI - Guide
+# Run guide
 
-This project monitors parking lot occupancy using YOLO11 and provides data-driven insights.
+The [README](README.md#setup) is the maintained setup and usage guide. It covers environment setup, calibration, controls, optional analytics/OpenVINO dependencies, and the timing limitations of prerecorded-video analysis.
 
-## 🚀 1. Setup & Installation
+From the repository root, the demonstration sequence is:
 
-Install the required dependencies:
 ```bash
-pip install -r requirements.txt
-```
-
-## ⚙️ 2. Configuration
-
-Most settings are managed through `config.json`. You can customize:
-- `video_source`: Path to your video file.
-- `model_path`: Path to YOLO model (e.g., `yolo11n.pt` or OpenVINO).
-- `display`: Window resolution and playback speed (slow-mo).
-
-## 🖱 3. Define Parking Spots
-
-1.  **Extract a reference image**:
-    `python img.py`
-2.  **Run the selection tool**:
-    `python se.py`
-3.  **Draw spots**: Select 4 points per spot using your mouse. Click **Save** to update `bounding_boxes.json`.
-
-## 🖥 4. Running the Monitor
-
-Launch the main application:
-```bash
+python img.py
+python se.py
 python main.py
+python analyze_logs.py
 ```
 
-### ⌨️ Keyboard Controls:
-- **Spacebar**: Pause / Play
-- **Progress Slider**: Drag at the top to seek through video
-- **`S` key**: Save a high-quality Snapshot
-- **`N` key**: Toggle Night-Mode enhancement
-- **ESC**: Exit window
-
-## 📊 5. Data & Analytics
-
-- **Historical Logs**: Occupancy data is saved to `parking_log.csv` every 5 seconds.
-- **Trend Charts**: Run `python analyze_logs.py` to generate a trend graph (`parking_trends.png`).
-- **Optimization**: Run `python optimize_model.py` to convert the model to OpenVINO for faster playback.
+Install dependencies first, select `img_0.jpg` in the region selector, and save `bounding_boxes.json` before starting the monitor. The analytics step requires `requirements-analytics.txt` and an existing occupancy log.

@@ -1,0 +1,3 @@
+# Optional dependencies for analyze_logs.py
+pandas
+matplotlib
